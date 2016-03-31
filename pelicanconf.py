@@ -7,12 +7,13 @@ SITENAME = u':wq'
 SITEURL = 'http://aganders3.github.io/blog'
 
 THEME = './theme'
-HEADER_COVER = 'static/piestewa.jpg'
+HEADER_COVER = 'images/piestewa.jpg'
 
 GITHUB_URL = 'http://github.com/aganders3'
 TWITTER_URL = 'http://twitter.com/aganders3'
 
 PATH = 'content'
+STATIC_PATHS = ['images', 'files']
 
 TIMEZONE = 'US/Arizona'
 
