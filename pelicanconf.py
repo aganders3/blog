@@ -7,7 +7,7 @@ SITENAME = u':wq'
 SITEURL = 'http://aganders3.github.io/blog'
 
 THEME = './theme'
-HEADER_COVER = 'images/piestewa.jpg'
+HEADER_COVER = 'images/piestewa_1024.jpg'
 
 GITHUB_URL = 'http://github.com/aganders3'
 TWITTER_URL = 'http://twitter.com/aganders3'
