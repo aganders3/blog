@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = u'Ashley Anderson'
 SITENAME = u':wq'
+SITESUBTITLE = 'a catalog of stuff I happen to write down'
 SITEURL = 'http://aganders3.github.io/blog'
 
 THEME = './theme'
@@ -27,10 +28,10 @@ AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
 # Blogroll
-LINKS = (('Pelican', 'http://getpelican.com/'),
-         ('Python.org', 'http://python.org/'),
-         ('Jinja2', 'http://jinja.pocoo.org/'),
-         ('You can modify those links in your config file', '#'),)
+# LINKS = (('Pelican', 'http://getpelican.com/'),
+#          ('Python.org', 'http://python.org/'),
+#          ('Jinja2', 'http://jinja.pocoo.org/'),
+#          ('You can modify those links in your config file', '#'),)
 
 # Social widget
 # SOCIAL = (('You can add links in your config file', '#'),
