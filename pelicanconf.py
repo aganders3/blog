@@ -5,16 +5,20 @@ from __future__ import unicode_literals
 AUTHOR = u'Ashley Anderson'
 SITENAME = u':wq'
 SITESUBTITLE = 'a catalog of stuff I happen to write down'
-# SITEURL = 'http://aganders3.github.io/blog'
+# SITEURL = 'http://aganders3.github.io'
 
 THEME = './theme'
-HEADER_COVER = 'images/piestewa_1024.jpg'
+HEADER_COVER = '/images/piestewa_1024.jpg'
 
 GITHUB_URL = 'http://github.com/aganders3'
 TWITTER_URL = 'http://twitter.com/aganders3'
 
 PATH = 'content'
 STATIC_PATHS = ['images', 'files']
+
+SLUGIFY_SOURCE = 'title'
+COLOR_SCHEME_CSS = 'tomorrow_night.css' # 'monokai.css'
+PYGMENTS_RST_OPTIONS = {'linenos' : 'table'}
 
 USE_FOLDER_AS_CATEGORY = True
 DEFAULT_DATE_FORMAT = '%A %B %d, %Y'
