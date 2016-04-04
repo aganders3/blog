@@ -16,6 +16,14 @@ TWITTER_URL = 'http://twitter.com/aganders3'
 PATH = 'content'
 STATIC_PATHS = ['images', 'files']
 
+USE_FOLDER_AS_CATEGORY = True
+DEFAULT_DATE_FORMAT = '%A %B %d, %Y'
+
+ARTICLE_URL = '{date:%Y}/{date:%m}/{slug}.html'
+ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{slug}.html'
+PAGE_URL = '{slug}/'
+PAGE_SAVE_AS = '{slug}/index.html'
+
 TIMEZONE = 'US/Arizona'
 
 DEFAULT_LANG = u'en'
