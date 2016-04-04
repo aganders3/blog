@@ -6,6 +6,6 @@ Hello World
 :slug: hello-world
 :author: Ashley Anderson
 :summary:
-:header_cover: images/piestewa_1024.jpg
+:header_cover: /images/piestewa_1024.jpg
 
 Hello, World!
