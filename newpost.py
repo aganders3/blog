@@ -34,7 +34,6 @@ if __name__ == "__main__":
         Date: {date_string}
         Category: {category}
         Tags: {tags}
-        Slug: {slug}
         Author: Ashley Anderson
         Summary:
         Header_Cover: /images/piestewa_1024.jpg
@@ -46,7 +45,6 @@ if __name__ == "__main__":
         :date: {date_string}
         :category: {category}
         :tags: {tags}
-        :slug: {slug}
         :author: Ashley Anderson
         :summary:
         :header_cover: /images/piestewa_1024.jpg
@@ -57,8 +55,7 @@ if __name__ == "__main__":
                                   title_bar='#'*len(title),
                                   date_string=date_string,
                                   category=args.category,
-                                  tags=', '.join(args.tags),
-                                  slug=slug)
+                                  tags=', '.join(args.tags))
 
     fname = './content/articles/{:04d}-{}'.format(num_articles, slug)
     fname = fname + ('.rst' if not args.md else '.md')
