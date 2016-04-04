@@ -3,7 +3,7 @@
 {% block header %}
     <!-- Page Header -->
     {% if page.header_cover %}
-        <header class="intro-header" style="background-image: url('{{ page.header_cover }}')">
+    <header class="intro-header" style="background-image: url('{{ SITEURL }}{{ page.header_cover }}')">
     {% else %}
         <header class="intro-header" style="background-image: url('{{ SITEURL }}/{{ THEME_STATIC_DIR }}/images/home-bg.jpg')">
     {% endif %}
