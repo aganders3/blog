@@ -19,6 +19,7 @@ STATIC_PATHS = ['images', 'files']
 SLUGIFY_SOURCE = 'title'
 COLOR_SCHEME_CSS = 'tomorrow_night.css' # 'monokai.css'
 PYGMENTS_RST_OPTIONS = {'linenos' : 'table'}
+DEFAULT_METADATA = {'status' : 'draft'}
 
 USE_FOLDER_AS_CATEGORY = True
 DEFAULT_DATE_FORMAT = '%A %B %d, %Y'

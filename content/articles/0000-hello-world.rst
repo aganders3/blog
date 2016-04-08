@@ -1,5 +1,6 @@
 Hello World
 ###########
+:status: published
 :date: 2016-03-31 15:11
 :category:
 :tags:
