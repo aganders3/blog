@@ -26,6 +26,7 @@ h5,
 h6 {
   font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 800;
+  clear: both;
 }
 a {
   color: #404040;
@@ -407,4 +408,19 @@ body {
 .highlighttable td.code {
     max-width: 100%;
     width: 100%;
+}
+
+.align-left {
+    float: left;
+    margin: 15px;
+    clear: both;
+}
+
+.align-center {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    clear: both;
 }

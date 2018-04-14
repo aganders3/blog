@@ -8,6 +8,7 @@ SITESUBTITLE = 'a catalog of stuff I happen to write down'
 # SITEURL = 'http://aganders3.github.io'
 
 THEME = './theme'
+THEME_STATIC_DIR = './theme/static'
 HEADER_COVER = '/images/piestewa_1024.jpg'
 
 GITHUB_URL = 'http://github.com/aganders3'
@@ -29,7 +30,7 @@ ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{slug}.html'
 PAGE_URL = '{slug}/'
 PAGE_SAVE_AS = '{slug}/index.html'
 
-TIMEZONE = 'US/Arizona'
+TIMEZONE = 'US/Central'
 
 DEFAULT_LANG = u'en'
 

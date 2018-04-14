@@ -9,3 +9,6 @@ I'm an MRI researcher currently living in Rochester, MN. I use Python for
 scientific programming at work, and hobby programming on the side. I am also
 working on learning iOS programming with Swift.
 
+In my free time I ride bicycles on all kinds of terrain, and spend time cooking
+and chilling with my family.
+
