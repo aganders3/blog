@@ -15,7 +15,8 @@ GITHUB_URL = 'http://github.com/aganders3'
 TWITTER_URL = 'http://twitter.com/aganders3'
 
 PATH = 'content'
-STATIC_PATHS = ['images', 'files']
+STATIC_PATHS = ['images', 'files', 'extra/CNAME']
+EXTRA_PATH_METADATA = {'extra/CNAME': {'path': 'CNAME'},}
 
 SLUGIFY_SOURCE = 'title'
 COLOR_SCHEME_CSS = 'tomorrow_night.css' # 'monokai.css'
