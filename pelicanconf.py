@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 AUTHOR = u'Ashley Anderson'
 SITENAME = u':wq'
 SITESUBTITLE = 'a catalog of stuff I happen to write down'
-# SITEURL = 'http://aganders3.github.io'
+SITEURL = 'https://aga3.xyz'
 
 THEME = './theme'
 THEME_STATIC_DIR = './theme/static'
