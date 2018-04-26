@@ -15,7 +15,7 @@ GITHUB_URL = 'http://github.com/aganders3'
 TWITTER_URL = 'http://twitter.com/aganders3'
 
 PATH = 'content'
-STATIC_PATHS = ['images', 'files', 'extra/CNAME']
+STATIC_PATHS = ['images', 'images/projects', 'files', 'extra/CNAME']
 EXTRA_PATH_METADATA = {'extra/CNAME': {'path': 'CNAME'},}
 
 SLUGIFY_SOURCE = 'title'
