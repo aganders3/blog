@@ -5,9 +5,9 @@ About Me
 :summary: I ride bikes and spin protons
 :header_cover: /images/piestewa_1024.jpg
 
-I'm an MRI researcher currently living in Rochester, MN. I use Python for
-scientific programming at work, and hobby programming on the side. I am also
-working on learning iOS programming with Swift.
+I'm an MRI clinical scientist currently living in Rochester, MN. I use Python
+for scientific programming at work, and hobby programming on the side. I
+recently shipped my first iOS app, written in Swift.
 
 In my free time I ride bicycles on all kinds of terrain, and spend time cooking
 and chilling with my family.

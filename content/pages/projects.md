@@ -7,6 +7,18 @@ Header_Cover: /images/piestewa\_1024.jpg
 Projects
 ========
 
+Yield Curve Viewer
+------------------
+
+[The Yield Curve Viewer](http://yield.aga3.xyz)
+* A Flask-based web app for viewing The Yield Curve *
+
+The Yield Curve refers to the "curve" of US Treasury Bond yields, and is a
+financial [indicator](http://www.npr.org/indicator) with a track record for
+predicting recessions. I built this site to scrape official yield data daily
+from [treasury.gov](http://www.treasury.gov) and display the curve in a simple
+manner.
+
 Forecheck
 ---------
 
