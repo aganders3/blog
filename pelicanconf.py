@@ -15,7 +15,7 @@ GITHUB_URL = 'http://github.com/aganders3'
 TWITTER_URL = 'http://twitter.com/aganders3'
 
 PATH = 'content'
-STATIC_PATHS = ['images', 'images/projects', 'files', 'extra/CNAME']
+STATIC_PATHS = ['images', 'images/projects', 'files', 'extra/CNAME', 'notebooks']
 EXTRA_PATH_METADATA = {'extra/CNAME': {'path': 'CNAME'},}
 
 SLUGIFY_SOURCE = 'title'
@@ -34,6 +34,11 @@ PAGE_SAVE_AS = '{slug}/index.html'
 TIMEZONE = 'US/Central'
 
 DEFAULT_LANG = u'en'
+
+PLUGIN_PATHS = ['/Users/ash/Src/Not Work/pelican-plugins']
+PLUGINS = ['render_math']
+
+MATH_JAX = {'align' : 'left', 'indent' : '3cm'}
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
