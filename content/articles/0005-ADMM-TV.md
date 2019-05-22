@@ -38,14 +38,19 @@ g(z) = \lambda z\\
 A = F\\
 B = -I$$
 
-OK then - now we can look at the ADMM algorithm that's going to solve our problem. It's an iterative solver, and here are the iteration update steps. Basically we will do these steps for some number of iterations, or until the solution seems like it's not changing much (probably close enough to solved):
+Right, now we can look at the ADMM algorithm that's going to solve our problem. It's an iterative solver, and here are the iteration update steps. Basically we will do these steps for some number of iterations, or until the solution seems like it's not changing much (probably close enough to solved):
 $$x_{k+1} := \underset{x}{\textrm{argmin}}\ L_\rho(x, z_k, y_k)\\
 z_{k+1} := \underset{z}{\textrm{argmin}}\ L_\rho(x_{k+1}, z, y_k)\\
-y_{k+1} := y_k + \rho(Ax_{k+1} + Bz_{k+1} − c)
+y_{k+1} := y_k + \rho(Ax_{k+1} + Bz_{k+1} − c)\\
 $$
-Where $L_\rho$ is the augmented Lagrangian of our problem. This formulation can help transform *constrained* optimization problems into *unconstrained* problems. For more information check out the ADMM paper linked above.
+Where $L_{\rho} = f(x) + g(z) + y^T(Ax + Bz - c) + \frac{\rho}{2}\|Ax + Bz - c\|_2^2$ is the augmented Lagrangian of our problem. This formulation can help transform *constrained* optimization problems into *unconstrained* problems. For more information check out the ADMM paper linked above.
 
-Now we have this algorithm, but how is solving *two* optimization problems better than one? This method works because each of the subproblems is much easier to solve than our original problem. Notice with each individual update we're only minimizing with respect to one variable - since our objective function is separable, this greatly simplifies the problem.
+Since the objectives are separable, we can simplify the update steps a bit further (just shown for $x$, but applies likewise to $z$):
+$$x_{k+1} = \underset{x}{\textrm{argmin}}(f(x) + \frac{\rho}{2}\|x - v\|^2_2)\\
+where\ v = -Bz + c - u
+$$
+
+But how is solving *two* optimization problems better than one? This method works because each of the subproblems is much easier to solve than our original problem. Notice with each individual update we're only minimizing with respect to one variable - since our objective function is separable, this greatly simplifies the problem.
 
 ## Show the Code
 
@@ -90,7 +95,9 @@ def total_variation(b, lam, rho, alpha):
     ABSTOL = 1e-4
     RELTOL = 1e-2
 ```
-Next some variable initialization, and we pre-calculate the (sparse) difference matrix $D$ used for calculating TV, as well as the product with its own transpose ($DtD$) which will be used later.
+
+The following chunk of code is some variable initialization, and we pre-calculate the (sparse) difference matrix $D$ used for calculating TV, as well as the product with its own transpose ($DtD$) which will be used later.
+
 ```python
     ...
 
@@ -118,7 +125,9 @@ Next some variable initialization, and we pre-calculate the (sparse) difference 
                'eps_prim': [],
                'eps_dual': []}
 ```
+
 Here's the ADMM algorithm itself showing the $x$, $z$, and $y$ ($u$) updates. Here is where Chapter 4 in the ADMM paper referenced above is very helpful in describing methods for solving the sub-problems based on the form of the objective terms. The $x$ update is for the $f(x)$ term and we're using a "direct method" to solve it since the objective is quadratic (see 4.2). The $z$ update uses soft thresholding (see 4.4.3) since the $g(z)$ objective is to minimize the L1 norm. This implementation also makes use of the scaled dual variable $u=y/\rho$ (3.1.1) and (over-)relaxation with the parameter `alpha`, which can improve convergence (3.4.3).
+
 ```python
     ...
 
@@ -139,7 +148,9 @@ Here's the ADMM algorithm itself showing the $x$, $z$, and $y$ ($u$) updates. He
         # u is the scaled dual variable y/rho (ADMM paper 3.1.1)
         u = u + Ax_hat - z
 ```
+
 With the updates out of the way, we will keep track of some calculated values in the `history` dictionary to evaluate performance and convergence. Finally we will check for convergence based on both absolute and relative tolerances of the primal and dual residuals.
+
 ```python
     ...
         ...
@@ -165,7 +176,9 @@ With the updates out of the way, we will keep track of some calculated values in
 
     return history, x
 ```
+
 Lastly, there are two small functions used above that we will still need to define: the objective value is a straightforward code implementation of our stated problem, and the shrinkage function is used for soft-thresholding (moves all values of its input toward 0).
+
 ```python
 def TV_denoising_objective(b, lam, x, z):
     """TV denoising objective calculation"""
@@ -175,6 +188,7 @@ def shrinkage(a, kappa):
     """Soft-thresholding of `a` with threshold `kappa`"""
     return np.clip(a-kappa, a_min=0, a_max=None) - np.clip(-a-kappa, a_min=0, a_max=None)
 ```
+
 Great, now we're ready to run it and see how it works. We'll try it with three different values for $\lambda$.
 
 ```python
@@ -196,7 +210,7 @@ Wall time: 1.08 s
 ## A Matrix-Free Implementation
 It's nice when you can form a matrix operator and take advantage of existing clever linear algebra algorithms to efficiently compute things, but this is not always practical. Especially when dealing with (vectorized) images, for example, where even sparse matrices can be difficult to form or store efficiently. Additionally, many linear transformations - such as spatially variant blurring - don't have convenient (i.e. structured and/or sparse) matrix forms. This is where matrix-free methods come into play. Often we don't actually need a matrix if we can calculate matrix-vector products.
 
-SciPy has some helpful features here in `scipy.sparse.linalg`. Note specifically the `LinearOperator` class, that lets you define a linear operator by specifying functions for $Av$ (`matvec`) and $A^Hv$ (`rmatvec`). Using a `LinearOperator` instead of a matrix mean we can no longer use `solve` or `inv`, but we get our choice of built in solvers. Below I just use `cg` (conjugate gradient) since the matrix we're inverting ($I + \rho D^HD$) is symmetric and positive semidefinite.
+SciPy has some helpful features here in `scipy.sparse.linalg`. Note specifically the `LinearOperator` class, that lets you define a linear operator by specifying functions for $Av$ (`matvec`) and $A^Hv$ (`rmatvec`). Using a `LinearOperator` instead of a matrix means we can no longer use `solve` or `inv`, but we get our choice of built in solvers. Below I just use `cg` (conjugate gradient) since the matrix we're inverting ($I + \rho D^HD$) is symmetric and positive semidefinite.
 
 ```python
 from scipy.sparse.linalg import LinearOperator, cg
