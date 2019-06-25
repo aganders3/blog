@@ -36,3 +36,5 @@ Now, my implementation is not lightning fast here, but it works. Here are the re
 
 That's it! We have near-perfect image reconstruction from approximately 1/3 of the required Fourier coefficients. This is kind of like signal compression in reverse, and is referred to as [Compressed Sensing](https://en.wikipedia.org/wiki/Compressed_sensing). From here you can consider how other constraints besides TV may fit into this framework to allow even further undersampling.
 
+At the time of posting it's a little messy, but if you're curious you can also play around with the [Jupyter Notebook](https://github.com/aganders3/aganders3.github.io/blob/develop/content/notebooks/Total Variation Reconstruction.ipynb) I used for this post.
+
