@@ -205,7 +205,7 @@ CPU times: user 1.06 s, sys: 16.1 ms, total: 1.07 s
 Wall time: 1.08 s
 ```
 
-<img src="{filename}/images/tv_denoising.png" class="center-block img-responsive"/>
+<img src="{static}/images/tv_denoising.png" class="center-block img-responsive"/>
 
 ## A Matrix-Free Implementation
 It's nice when you can form a matrix operator and take advantage of existing clever linear algebra algorithms to efficiently compute things, but this is not always practical. Especially when dealing with (vectorized) images, for example, where even sparse matrices can be difficult to form or store efficiently. Additionally, many linear transformations - such as spatially variant blurring - don't have convenient (i.e. structured and/or sparse) matrix forms. This is where matrix-free methods come into play. Often we don't actually need a matrix if we can calculate matrix-vector products.
@@ -322,21 +322,21 @@ CPU times: user 512 ms, sys: 3.7 ms, total: 515 ms
 Wall time: 513 ms
 ```
 
-<img src="{filename}/images/matrix_free_tv_denoising.png" class="center-block img-responsive"/>
+<img src="{static}/images/matrix_free_tv_denoising.png" class="center-block img-responsive"/>
 
 The results are similar but not quite identical, so I'm guessing my `LinearOperator` is incorrect by a bit somewhere. However, the matrix-free version actually seems slightly better at preserving the flatness in the valleys. This version is also significantly faster with increasing input length, though it's notable the matrix implementation is faster for small inputs (runtime also changes with $\lambda$). Of course neither implementation is necessarily optimized - this is more of a casual observation about my initial naïve implementations. The ADMM paper gives some additional recommendations for speeding things up when using direct (as in the first implementation above) or iterative (as with my matrix-free implementation) techniques.
 
-<img src="{filename}/images/runtime_benchmark.png" class="center-block img-responsive"/>
+<img src="{static}/images/runtime_benchmark.png" class="center-block img-responsive"/>
 
 ## Why TV Anyway?
 
 Why use total variation anyway? The good thing about total variation is its ability to preserve the sharp edges in our signal. Check out what *quadratic* smoothing looks like in comparison:
 
-<img src="{filename}/images/quadratic_smoothing.png" class="center-block img-responsive"/>
+<img src="{static}/images/quadratic_smoothing.png" class="center-block img-responsive"/>
 
 This all comes down to the shape of the penalty function. With a quadratic penalty, small changes are tolerated while large deviations are severely penalized. With a TV (L1) penalty, deviations are all penalized proportionally to their size. Hopefully this lends some intuition to the methods.
 
-<img src="{filename}/images/penalty_functions.png" class="center-block img-responsive"/>
+<img src="{static}/images/penalty_functions.png" class="center-block img-responsive"/>
 
 ## Conclusion
 
