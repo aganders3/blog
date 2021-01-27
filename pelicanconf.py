@@ -15,7 +15,7 @@ GITHUB_URL = 'http://github.com/aganders3'
 TWITTER_URL = 'http://twitter.com/aganders3'
 
 PATH = 'content'
-STATIC_PATHS = ['images', 'images/projects', 'files', 'extra/CNAME', 'notebooks']
+STATIC_PATHS = ['images', 'images/projects', 'extra/CNAME', 'notebooks']
 EXTRA_PATH_METADATA = {'extra/CNAME': {'path': 'CNAME'},}
 
 SLUGIFY_SOURCE = 'title'
@@ -60,4 +60,4 @@ AUTHOR_FEED_RSS = None
 DEFAULT_PAGINATION = False
 
 # Uncomment following line if you want document-relative URLs when developing
-# RELATIVE_URLS = True
+RELATIVE_URLS = True
