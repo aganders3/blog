@@ -56,3 +56,18 @@ Resonance Technology Design Group at the Barrow Neurological Institute
 in Phoenix, AZ. I joined this group as a post-doc in 2014, eventually
 becoming a Research Assistant Professor. I moved on from this position
 in 2017, but I still use and maintain GPI in a smaller capacity.
+
+Ray Tracing
+-----------
+
+Recently I've been learning about Rust and getting back to 3D graphics programming.
+Those interests combined in my
+[`wasm-ray`](https://github.com/aganders3/wasm-ray) project. This is an
+implementation based on Peter Shirley's great book [_Ray Tracing in One
+Weekend_](https://raytracing.github.io).
+
+Initially I was building it for wasm - you can see the live demo of that
+[here](https://aga3.xyz/wasm-ray/), but ultimately it was too slow to be fun
+and I switched to local rendering. This also let me learn about "fearless
+parallelism" in Rust, which was nice. I'm planning to keep this project going
+for a while in some form.

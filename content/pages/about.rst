@@ -6,9 +6,11 @@ About Me
 :header_cover: /images/piestewa_1024.jpg
 
 I'm a software engineer with a background in medical imaging, and I currently
-work at Hyperfine - a medical device startup in Connecticut. I use Python for
-scientific programming at work, and hobby programming on the side. I recently
-shipped my first iOS app, written in Swift.
+work at `Hyperfine <https://hyperfine.io>` - a medical device startup in
+Connecticut. I use Python for scientific and general programming at work, and
+hobby programming on the side. I (not-so) recently shipped my first iOS app,
+written in Swift. More recently, I have been learning about Rust and getting
+back to graphics programming, which I had not done since graduate school.
 
 In my free time I ride bicycles on all kinds of terrain, and spend time cooking
 and chilling with my family.
