@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>:wq</title>
+
+        <!-- jQuery -->
+        <!-- <script src="https://aga3.xyz/./theme/static/js/jquery.js"></script> -->
+        <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+
+        <!-- Bootstrap Core JavaScript -->
+        <script src="https://aga3.xyz/./theme/static/js/bootstrap.min.js"></script>
+        <!-- Bootstrap Core CSS -->
+        <link href="https://aga3.xyz/./theme/static/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom Theme JavaScript -->
+        <script src="https://aga3.xyz/./theme/static/js/clean-blog.min.js"></script>
+
+        <!-- Custom CSS -->
+        <link href="https://aga3.xyz/./theme/static/css/clean-blog.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://aga3.xyz/./theme/static/css/code_blocks/tomorrow_night.css" rel="stylesheet">
+
+        <!-- FontAwesome JavaScript -->
+        <script src="https://kit.fontawesome.com/3abd13917d.js"></script>
+
+            <link href="https://aga3.xyz/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title=":wq Full Atom Feed" />
+
+        <!-- Custom Fonts
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'> -->
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+
+     <link rel="canonical" href="https://aga3.xyz/2021/01/on-mocking" />
+
+
+			<meta property="og:locale" content="en">
+		<meta property="og:site_name" content=":wq">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://aga3.xyz/2021/01/on-mocking">
+	<meta property="og:title" content="On Mocking">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="https://aga3.xyz//images/piestewa_1024.jpg">
+	<meta property="article:published_time" content="2021-01-26 23:20:00-05:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="https://aga3.xyz/">:wq</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+						<li><a href="https://aga3.xyz/about-me/">About Me</a></li>
+						<li><a href="https://aga3.xyz/projects/">Projects</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('/images/piestewa_1024.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
+                    <div class="post-heading">
+                        <h1>On Mocking</h1>
+                        <span class="meta">
+                             Tuesday January 26, 2021
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
+    <!-- Post Content -->
+    <article>
+        <p>I'm generally aware that there is a debate about mocking in tests, but
+honestly I have not thoroughly researched the arguments. Here I will consider
+"both sides" of the issue from my naïve standpoint as a thought exercise to
+improve my own understanding of testing and mocking.</p>
+<p>For the purposes of this (hopefully short) article, I'm going to ignore the
+differences between mocks, fakes, stubs, etc. The differences are certainly
+important, but ultimately I just don't want this to devolve into a semantic
+argument.</p>
+<h1>The Case Against Mocking</h1>
+<p>The basic case against mocking is simple: mocks are not your code.
+Ergo if you mock in test, you're not testing your code.</p>
+<p>Here are some more specific criticisms I can come up with.</p>
+<h4>Mocking is a code (test?) smell</h4>
+<p>Needing to mock is an indication you need to refactor your code and/or tests:</p>
+<ul>
+<li>Your tests are too big: test smaller pieces of code.</li>
+<li>If you can't make your tests smaller, your code is too tightly coupled: separate the concerns.</li>
+</ul>
+<p>Simple! Ultimately good code should be relatively easilty testable. Of course
+there are exceptions to this, but we are in the business of writing code, not
+tests! Let's ignore for now that tests are code.</p>
+<h4>Mocking is dangerous</h4>
+<p>Mocks make it easier for tests to get out of sync with your code, such that
+they're useless or even dangerous. Bad tests can be worse than no tests at all
+by instilling false confidence, wasting build time, and hiding breaking changes.</p>
+<h4>Mocking is a burden</h4>
+<p>Testing is overhead, but it is meant to enhance developer productivity. As
+mentioned above, mocks can make it easier for tests to become stale or out of
+sync with your code. The more time you spend rewriting tests, the more overhead
+they become. Tests should be simple so that when a test fails, you know to fix
+the code not the test.</p>
+<h1>The Case For Mocking</h1>
+<p>We live in a real, flawed world. We write bad code. We write code without tests!</p>
+<p>Of course we'd never actually do that, but we uh...inherit code without tests!
+(Sometimes from our younger, more foolish selves.)</p>
+<p>I will concede that mocks seem inelegant, but that doesn't mean they're not
+useful. Just because we're not testing <em>all</em> our code doesn't mean we're not
+adding value. Likewise regarding the dangers - most useful tools are somewhat
+dangerous, but we learn how to use them and how to be careful.</p>
+<p>Here are just some circumstances where I can envision using mocks
+(some from experience, some hypothetical):</p>
+<h4>Mock early in an untested project</h4>
+<p>Just as premature optimization is a mistake, premature refactoring is a
+mistake. The extreme version is the infamous
+<a href="https://www.joelonsoftware.com/2000/04/06/things-you-should-never-do-part-i/">rewrite</a>.
+You can't and shouldn't always dive into refactoring, and some tests are
+generally better than none tests, so just get them in there even if you have to
+use a mock or two.</p>
+<p>A huge benefit of testing is refactoring without fear. Getting a few tests in,
+even with mocks, will make it easier to start refactoring, ultimately getting
+you to that fully-tested mock-free Nirvana sooner.</p>
+<h4>Mock out parts that are already tested</h4>
+<p>How about mocking a third party library? Sure it's open source so theoretically
+you could contribute, but if it's a big well supported project just mock it and
+leave the testing to them.</p>
+<p>Even in your own project, if you have some costly function with a strong API that is already
+tested - just mock that puppy! Sure, your test will stop testing properly if
+the API changes, but you should have a good idea when that happens. Maybe you
+can even do something fancy like automatically generate the mock with the same
+API (maybe that makes it a fake or stub or a crash test dummy or something).</p>
+<h4>Mock a big fixture</h4>
+<p>Say you want to test against a server, but you don't want to test against the
+<em>actual</em> live server. You could stand up your own version as a test fixture,
+but this comes with many of the same problems as mocking and then some. Save
+yourself the time and energy and Just Mock It™.</p>
+<h4>Mock some hardware</h4>
+<p>I work on software for a "device", but this applies to more situations than
+that. For example, you could mock some API calls into a GPU library if your
+test environment doesn't have one.</p>
+    </article>
+
+    <hr>
+
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Blog powered by <a href="http://getpelican.com">Pelican</a>,
+                which takes great advantage of <a href="http://python.org">Python</a>.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+</body>
+
+</html>

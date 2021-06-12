@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>:wq</title>
+
+        <!-- jQuery -->
+        <!-- <script src="https://aga3.xyz/./theme/static/js/jquery.js"></script> -->
+        <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+
+        <!-- Bootstrap Core JavaScript -->
+        <script src="https://aga3.xyz/./theme/static/js/bootstrap.min.js"></script>
+        <!-- Bootstrap Core CSS -->
+        <link href="https://aga3.xyz/./theme/static/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom Theme JavaScript -->
+        <script src="https://aga3.xyz/./theme/static/js/clean-blog.min.js"></script>
+
+        <!-- Custom CSS -->
+        <link href="https://aga3.xyz/./theme/static/css/clean-blog.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://aga3.xyz/./theme/static/css/code_blocks/tomorrow_night.css" rel="stylesheet">
+
+        <!-- FontAwesome JavaScript -->
+        <script src="https://kit.fontawesome.com/3abd13917d.js"></script>
+
+            <link href="https://aga3.xyz/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title=":wq Full Atom Feed" />
+
+        <!-- Custom Fonts
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'> -->
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+
+     <link rel="canonical" href="https://aga3.xyz/2019/05/total-variation-denoising-with-admm" />
+
+
+			<meta property="og:locale" content="en">
+		<meta property="og:site_name" content=":wq">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://aga3.xyz/2019/05/total-variation-denoising-with-admm">
+	<meta property="og:title" content="Total Variation Denoising with ADMM">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="https://aga3.xyz/">
+	<meta property="article:published_time" content="2019-05-16 15:05:00-04:00">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="https://aga3.xyz/">:wq</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+						<li><a href="https://aga3.xyz/about-me/">About Me</a></li>
+						<li><a href="https://aga3.xyz/projects/">Projects</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('/images/piestewa_1024.jpg ')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
+                    <div class="post-heading">
+                        <h1>Total Variation Denoising with ADMM</h1>
+                        <span class="meta">
+                             Thursday May 16, 2019
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
+    <!-- Post Content -->
+    <article>
+        <p>Let's talk about nonlinear solvers, specifically the Alternating Directions
+Method of Multipliers (ADMM).</p>
+<p>I've been reading through Steven Boyd's <a href="https://web.stanford.edu/~boyd/cvxbook/">Convex Optimization</a> book, as well as his (rather long) <a href="https://web.stanford.edu/~boyd/papers/admm_distr_stats.html">paper on ADMM</a>. He has kindly posted a number of examples for this paper on his website to demonstrate how to write an ADMM solver. The examples are all in Matlab, but I typically work in Python so in the process of learning and playing with the examples I am also translating some to Python.</p>
+<h2>Total Variation Denoising</h2>
+<p>The example I'm going to demonstrate here is <a href="https://web.stanford.edu/~boyd/papers/admm/total_variation/total_variation_example.html">total variation denoising</a>. One way I think about denoising is as a method of fitting a dense set of existing data (so no interpolation) while minimizing some added metric (regularization). The regularization term should be selected such that it <em>penalizes</em> noise while preserving the features in your signal. A regularization parameter (often <span class="math">\(\lambda\)</span>) is used to tune the algorithm performance. There are a number of ways to do this, but one popular method is to add a penalty for the total variation of the signal. <a href="https://en.wikipedia.org/wiki/Total_variation">Total variation</a> (TV) is the <em>sum of absolute value of adjacent differences</em>:
+</p>
+<div class="math">$$TV(x) = \Sigma_{i=0}^N |f(x_{i+1}) - f(x_i)|$$</div>
+<p>Formally, the whole denoising problem looks like this:
+</p>
+<div class="math">$$\textrm{minimize}\ \frac{1}{2}\|x - b\|_2^2 + \lambda \Sigma_{i=0}^N |x_{i+1} - x_i|$$</div>
+<p>In plain(er) English: find a vector <span class="math">\(x\)</span> that minimizes the sum-of-squares of the differences (aka least squares) between itself and the input <span class="math">\(b\)</span> but also keep the TV of the new vector low. If <span class="math">\(\lambda\)</span> is small prefer matching the input, if it is large prefer minimizing TV.</p>
+<p>That's all well and good - but how is actually done in a practical sense? This is a huge field generally called optimization. Optimization problems can then of course be formalized and subcategorized. Generally speaking if an optimization problem is linear it can be solved, if it is "convex" it can very often be solved. Least-squares fitting is a <em>linear</em> problem. TV denoising is a <em>convex</em> problem.</p>
+<h2>ADMM</h2>
+<p>ADMM is a method for solving convex problems. The key to using ADMM is the separable terms in the minimization. This allows the whole problem to be solved by iterating over two subproblems, solving them alternatively with each iteration followed by a dual-variable update. Basically ADMM can solve (many) problems with the very general form:
+</p>
+<div class="math">$$\textrm{minimize}\ f(x)+ g(z)\\
+\textrm{subject to}\ Ax + Bz = c$$</div>
+<p>OK that kind of looks like our TV denoising problem above, so we're on the right track. Now, we need two variables in ADMM but our problem only has one (<span class="math">\(x\)</span>). This will seem silly, but to fix it we'll just make up the variable <span class="math">\(z\)</span> and say  <span class="math">\(Fx-z = 0\)</span>, where <span class="math">\(F\)</span> is the matrix form of our TV operator.</p>
+<p>Let's see if we can write our problem closer to the ADMM form now:
+</p>
+<div class="math">$$\textrm{minimize}\ \frac{1}{2}\|x - b\|_2^2 + \lambda z\\
+\textrm{s.t.}\ Fx - z = 0$$</div>
+<p>I'll be very explicit here about how these problems line up:
+</p>
+<div class="math">$$f(x) = \frac{1}{2}\|x - b\|_2^2\\
+g(z) = \lambda z\\
+A = F\\
+B = -I$$</div>
+<p>Right, now we can look at the ADMM algorithm that's going to solve our problem. It's an iterative solver, and here are the iteration update steps. Basically we will do these steps for some number of iterations, or until the solution seems like it's not changing much (probably close enough to solved):
+</p>
+<div class="math">$$x_{k+1} := \underset{x}{\textrm{argmin}}\ L_\rho(x, z_k, y_k)\\
+z_{k+1} := \underset{z}{\textrm{argmin}}\ L_\rho(x_{k+1}, z, y_k)\\
+y_{k+1} := y_k + \rho(Ax_{k+1} + Bz_{k+1} − c)\\
+$$</div>
+<p>
+Where <span class="math">\(L_{\rho} = f(x) + g(z) + y^T(Ax + Bz - c) + \frac{\rho}{2}\|Ax + Bz - c\|_2^2\)</span> is the augmented Lagrangian of our problem. This formulation can help transform <em>constrained</em> optimization problems into <em>unconstrained</em> problems. For more information check out the ADMM paper linked above.</p>
+<p>Since the objectives are separable, we can simplify the update steps a bit further (just shown for <span class="math">\(x\)</span>, but applies likewise to <span class="math">\(z\)</span>):
+</p>
+<div class="math">$$x_{k+1} = \underset{x}{\textrm{argmin}}(f(x) + \frac{\rho}{2}\|x - v\|^2_2)\\
+where\ v = -Bz + c - u
+$$</div>
+<p>But how is solving <em>two</em> optimization problems better than one? This method works because each of the subproblems is much easier to solve than our original problem. Notice with each individual update we're only minimizing with respect to one variable - since our objective function is separable, this greatly simplifies the problem.</p>
+<h2>Show the Code</h2>
+<p>As mentioned, this is mostly a Matlab-to-Python translation of Steven Boyd's example, but I have also played around with a few different tweaks. Anyway let's get started with some familiar imports.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</code></pre></div>
+
+
+<p>Next let's do a straight port of the <a href="https://web.stanford.edu/~boyd/papers/admm/total_variation/total_variation.html">Matlab code</a>, going through it piece-by-piece. Let's start with the function definition, docstring (basically plagiarized from the example), and some constants used for stopping criteria.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">total_variation</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Solve total variation minimization via ADMM</span>
+
+<span class="sd">    Solves the following problem via ADMM:</span>
+
+<span class="sd">       min  (1/2)||x - b||_2^2 + lambda * sum_i |x_{i+1} - x_i|</span>
+
+<span class="sd">    where b in R^n.</span>
+
+<span class="sd">    The solution is returned in the vector x.</span>
+
+<span class="sd">    history is a structure that contains the objective value, the primal and</span>
+<span class="sd">    dual residual norms, and the tolerances for the primal and dual residual</span>
+<span class="sd">    norms at each iteration.</span>
+
+<span class="sd">    rho is the augmented Lagrangian parameter.</span>
+
+<span class="sd">    alpha is the over-relaxation parameter (typical values for alpha are</span>
+<span class="sd">    between 1.0 and 1.8).</span>
+
+<span class="sd">    More information can be found in the paper linked at:</span>
+<span class="sd">    http://www.stanford.edu/~boyd/papers/distr_opt_stat_learning_admm.html</span>
+
+<span class="sd">    *Code adapted from Steven Boyd*</span>
+<span class="sd">    https://web.stanford.edu/~boyd/papers/admm/total_variation/total_variation.html&quot;&quot;&quot;</span>
+
+    <span class="n">MAX_ITER</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">ABSTOL</span> <span class="o">=</span> <span class="mf">1e-4</span>
+    <span class="n">RELTOL</span> <span class="o">=</span> <span class="mf">1e-2</span>
+</code></pre></div>
+
+
+<p>The following chunk of code is some variable initialization, and we pre-calculate the (sparse) difference matrix <span class="math">\(D\)</span> used for calculating TV, as well as the product with its own transpose (<span class="math">\(DtD\)</span>) which will be used later.</p>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="c1"># difference matrix</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">spdiags</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">e</span><span class="p">,</span> <span class="o">-</span><span class="n">e</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">DtD</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">D</span>
+
+    <span class="c1"># sparse identity matrix</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;csc&#39;</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;objval&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+               <span class="s1">&#39;r_norm&#39;</span><span class="p">:</span> <span class="p">[],</span>
+               <span class="s1">&#39;s_norm&#39;</span><span class="p">:</span> <span class="p">[],</span>
+               <span class="s1">&#39;eps_prim&#39;</span><span class="p">:</span> <span class="p">[],</span>
+               <span class="s1">&#39;eps_dual&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+</code></pre></div>
+
+
+<p>Here's the ADMM algorithm itself showing the <span class="math">\(x\)</span>, <span class="math">\(z\)</span>, and <span class="math">\(y\)</span> (<span class="math">\(u\)</span>) updates. Here is where Chapter 4 in the ADMM paper referenced above is very helpful in describing methods for solving the sub-problems based on the form of the objective terms. The <span class="math">\(x\)</span> update is for the <span class="math">\(f(x)\)</span> term and we're using a "direct method" to solve it since the objective is quadratic (see 4.2). The <span class="math">\(z\)</span> update uses soft thresholding (see 4.4.3) since the <span class="math">\(g(z)\)</span> objective is to minimize the L1 norm. This implementation also makes use of the scaled dual variable <span class="math">\(u=y/\rho\)</span> (3.1.1) and (over-)relaxation with the parameter <code>alpha</code>, which can improve convergence (3.4.3).</p>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_ITER</span><span class="p">):</span>
+
+        <span class="c1"># x-update (minimization) for (1/2)||x - b||_2^2</span>
+        <span class="c1"># uses a direct method for the quadratic objective term</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">spsolve</span><span class="p">((</span><span class="n">I</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">DtD</span><span class="p">),</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">D</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">u</span><span class="p">)))</span>
+
+        <span class="c1"># z-update (minimization) with relaxation for lam * ||z||_1</span>
+        <span class="c1"># uses soft thresholding for the L1 term</span>
+        <span class="c1"># see ADMM paper 3.4.3</span>
+        <span class="n">z_</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="n">Ax_hat</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">D</span> <span class="o">@</span> <span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">z_</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">shrinkage</span><span class="p">(</span><span class="n">Ax_hat</span> <span class="o">+</span> <span class="n">u</span><span class="p">,</span> <span class="n">lam</span> <span class="o">/</span> <span class="n">rho</span><span class="p">)</span>
+
+        <span class="c1"># y-update (dual update)</span>
+        <span class="c1"># u is the scaled dual variable y/rho (ADMM paper 3.1.1)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">Ax_hat</span> <span class="o">-</span> <span class="n">z</span>
+</code></pre></div>
+
+
+<p>With the updates out of the way, we will keep track of some calculated values in the <code>history</code> dictionary to evaluate performance and convergence. Finally we will check for convergence based on both absolute and relative tolerances of the primal and dual residuals.</p>
+<div class="highlight"><pre><span></span><code>    <span class="o">...</span>
+        <span class="o">...</span>
+
+        <span class="c1"># keep track of progress</span>
+        <span class="n">objval</span> <span class="o">=</span> <span class="n">TV_denoising_objective</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+        <span class="n">r_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">D</span> <span class="o">@</span> <span class="n">x</span> <span class="o">-</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">s_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="o">-</span><span class="n">rho</span> <span class="o">*</span> <span class="n">D</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">z_</span><span class="p">))</span>
+
+        <span class="n">eps_prim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">ABSTOL</span> <span class="o">+</span> <span class="n">RELTOL</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">D</span> <span class="o">@</span> <span class="n">x</span><span class="p">),</span>
+                                                      <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))</span>
+        <span class="n">eps_dual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">ABSTOL</span> <span class="o">+</span> <span class="n">RELTOL</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">D</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">u</span><span class="p">)</span>
+
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;objval&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objval</span><span class="p">)</span>
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;r_norm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_norm</span><span class="p">)</span>
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;s_norm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_norm</span><span class="p">)</span>
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;eps_prim&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eps_prim</span><span class="p">)</span>
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;eps_dual&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eps_dual</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r_norm</span> <span class="o">&lt;</span> <span class="n">eps_prim</span> <span class="ow">and</span> <span class="n">s_norm</span> <span class="o">&lt;</span> <span class="n">eps_dual</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">history</span><span class="p">,</span> <span class="n">x</span>
+</code></pre></div>
+
+
+<p>Lastly, there are two small functions used above that we will still need to define: the objective value is a straightforward code implementation of our stated problem, and the shrinkage function is used for soft-thresholding (moves all values of its input toward 0).</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">TV_denoising_objective</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;TV denoising objective calculation&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">shrinkage</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">kappa</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Soft-thresholding of `a` with threshold `kappa`&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="n">kappa</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="o">-</span><span class="n">a</span><span class="o">-</span><span class="n">kappa</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p>Great, now we're ready to run it and see how it works. We'll try it with three different values for <span class="math">\(\lambda\)</span>.</p>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">time</span> <span class="n">hist</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">total_variation</span><span class="p">(</span><span class="n">b_</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">CPU</span> <span class="n">times</span><span class="p">:</span> <span class="n">user</span> <span class="mi">424</span> <span class="n">ms</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="mi">24</span> <span class="n">ms</span><span class="p">,</span> <span class="n">total</span><span class="p">:</span> <span class="mi">448</span> <span class="n">ms</span>
+<span class="n">Wall</span> <span class="n">time</span><span class="p">:</span> <span class="mi">449</span> <span class="n">ms</span>
+
+<span class="o">%</span><span class="n">time</span> <span class="n">hist</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">total_variation</span><span class="p">(</span><span class="n">b_</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">CPU</span> <span class="n">times</span><span class="p">:</span> <span class="n">user</span> <span class="mi">433</span> <span class="n">ms</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="mf">11.3</span> <span class="n">ms</span><span class="p">,</span> <span class="n">total</span><span class="p">:</span> <span class="mi">445</span> <span class="n">ms</span>
+<span class="n">Wall</span> <span class="n">time</span><span class="p">:</span> <span class="mi">445</span> <span class="n">ms</span>
+
+<span class="o">%</span><span class="n">time</span> <span class="n">hist</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">total_variation</span><span class="p">(</span><span class="n">b_</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">CPU</span> <span class="n">times</span><span class="p">:</span> <span class="n">user</span> <span class="mf">1.06</span> <span class="n">s</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="mf">16.1</span> <span class="n">ms</span><span class="p">,</span> <span class="n">total</span><span class="p">:</span> <span class="mf">1.07</span> <span class="n">s</span>
+<span class="n">Wall</span> <span class="n">time</span><span class="p">:</span> <span class="mf">1.08</span> <span class="n">s</span>
+</code></pre></div>
+
+
+<p><img src="https://aga3.xyz/images/tv_denoising.png" class="center-block img-responsive"/></p>
+<h2>A Matrix-Free Implementation</h2>
+<p>It's nice when you can form a matrix operator and take advantage of existing clever linear algebra algorithms to efficiently compute things, but this is not always practical. Especially when dealing with (vectorized) images, for example, where even sparse matrices can be difficult to form or store efficiently. Additionally, many linear transformations - such as spatially variant blurring - don't have convenient (i.e. structured and/or sparse) matrix forms. This is where matrix-free methods come into play. Often we don't actually need a matrix if we can calculate matrix-vector products.</p>
+<p>SciPy has some helpful features here in <code>scipy.sparse.linalg</code>. Note specifically the <code>LinearOperator</code> class, that lets you define a linear operator by specifying functions for <span class="math">\(Av\)</span> (<code>matvec</code>) and <span class="math">\(A^Hv\)</span> (<code>rmatvec</code>). Using a <code>LinearOperator</code> instead of a matrix means we can no longer use <code>solve</code> or <code>inv</code>, but we get our choice of built in solvers. Below I just use <code>cg</code> (conjugate gradient) since the matrix we're inverting (<span class="math">\(I + \rho D^HD\)</span>) is symmetric and positive semidefinite.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">LinearOperator</span><span class="p">,</span> <span class="n">cg</span>
+
+<span class="k">def</span> <span class="nf">matrix_free_tv</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Solve total variation minimization via ADMM *without forming the difference matrices*</span>
+
+<span class="sd">    Solves the following problem via ADMM:</span>
+
+<span class="sd">       min  (1/2)||x - b||_2^2 + lambda * sum_i |x_{i+1} - x_i|</span>
+
+<span class="sd">    where b in R^n.</span>
+
+<span class="sd">    The solution is returned in the vector x.</span>
+
+<span class="sd">    history is a structure that contains the objective value, the primal and</span>
+<span class="sd">    dual residual norms, and the tolerances for the primal and dual residual</span>
+<span class="sd">    norms at each iteration.</span>
+
+<span class="sd">    rho is the augmented Lagrangian parameter.</span>
+
+<span class="sd">    alpha is the over-relaxation parameter (typical values for alpha are</span>
+<span class="sd">    between 1.0 and 1.8).</span>
+
+<span class="sd">    More information can be found in the paper linked at:</span>
+<span class="sd">    http://www.stanford.edu/~boyd/papers/distr_opt_stat_learning_admm.html</span>
+
+<span class="sd">    *Code adapted from Steven Boyd*</span>
+<span class="sd">    https://web.stanford.edu/~boyd/papers/admm/total_variation/total_variation.html&quot;&quot;&quot;</span>
+    <span class="n">MAX_ITER</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">ABSTOL</span> <span class="o">=</span> <span class="mf">1e-4</span>
+    <span class="n">RELTOL</span> <span class="o">=</span> <span class="mf">1e-2</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">D</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">v</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">Dt</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">v</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">mv</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="c1"># return v + rho * (2*v - np.roll(v, -1) - np.roll(v, 1))</span>
+        <span class="c1"># return v + rho * DtD @ v</span>
+        <span class="k">return</span> <span class="n">v</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">Dt</span><span class="p">(</span><span class="n">D</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+
+    <span class="n">F</span> <span class="o">=</span> <span class="n">LinearOperator</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">),</span> <span class="n">matvec</span><span class="o">=</span><span class="n">mv</span><span class="p">,</span> <span class="n">rmatvec</span><span class="o">=</span><span class="n">mv</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,))</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;objval&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+               <span class="s1">&#39;r_norm&#39;</span><span class="p">:</span> <span class="p">[],</span>
+               <span class="s1">&#39;s_norm&#39;</span><span class="p">:</span> <span class="p">[],</span>
+               <span class="s1">&#39;eps_prim&#39;</span><span class="p">:</span> <span class="p">[],</span>
+               <span class="s1">&#39;eps_dual&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_ITER</span><span class="p">):</span>
+
+        <span class="c1"># x-update (minimization)</span>
+        <span class="c1"># iterative version</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cg</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">b</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">Dt</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">u</span><span class="p">),</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">x0</span> <span class="o">=</span> <span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># z-update (minimization) with relaxation</span>
+        <span class="c1"># uses soft thresholding - the proximity operator of the l-1 norm</span>
+        <span class="n">z_</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="n">Ax_hat</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">D</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">z_</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">shrinkage</span><span class="p">(</span><span class="n">Ax_hat</span> <span class="o">+</span> <span class="n">u</span><span class="p">,</span> <span class="n">lam</span> <span class="o">/</span> <span class="n">rho</span><span class="p">)</span>
+
+        <span class="c1"># y-update (dual update)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">Ax_hat</span> <span class="o">-</span> <span class="n">z</span>
+
+        <span class="c1"># keep track of progress</span>
+        <span class="n">objval</span> <span class="o">=</span> <span class="n">objective</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+        <span class="n">r_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">D</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">s_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="o">-</span><span class="n">rho</span> <span class="o">*</span> <span class="n">z</span> <span class="o">-</span> <span class="n">z_</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">z_</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">eps_prim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">ABSTOL</span> <span class="o">+</span> <span class="n">RELTOL</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">D</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
+                                                      <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))</span>
+        <span class="n">eps_dual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">ABSTOL</span> <span class="o">+</span> <span class="n">RELTOL</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">Dt</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
+
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;objval&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objval</span><span class="p">)</span>
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;r_norm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_norm</span><span class="p">)</span>
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;s_norm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_norm</span><span class="p">)</span>
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;eps_prim&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eps_prim</span><span class="p">)</span>
+        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;eps_dual&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eps_dual</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r_norm</span> <span class="o">&lt;</span> <span class="n">eps_prim</span> <span class="ow">and</span> <span class="n">s_norm</span> <span class="o">&lt;</span> <span class="n">eps_dual</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">history</span><span class="p">,</span> <span class="n">x</span>
+</code></pre></div>
+
+
+<p>Now I'll run this again with the same three <span class="math">\(\lambda\)</span> values from the original version:</p>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">time</span> <span class="n">hist</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">matrix_free_tv</span><span class="p">(</span><span class="n">b_</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">CPU</span> <span class="n">times</span><span class="p">:</span> <span class="n">user</span> <span class="mi">343</span> <span class="n">ms</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="mi">273</span> <span class="n">µs</span><span class="p">,</span> <span class="n">total</span><span class="p">:</span> <span class="mi">344</span> <span class="n">ms</span>
+<span class="n">Wall</span> <span class="n">time</span><span class="p">:</span> <span class="mi">344</span> <span class="n">ms</span>
+
+<span class="o">%</span><span class="n">time</span> <span class="n">hist</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">matrix_free_tv</span><span class="p">(</span><span class="n">b_</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">CPU</span> <span class="n">times</span><span class="p">:</span> <span class="n">user</span> <span class="mi">380</span> <span class="n">ms</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="mf">2.33</span> <span class="n">ms</span><span class="p">,</span> <span class="n">total</span><span class="p">:</span> <span class="mi">382</span> <span class="n">ms</span>
+<span class="n">Wall</span> <span class="n">time</span><span class="p">:</span> <span class="mi">382</span> <span class="n">ms</span>
+
+<span class="o">%</span><span class="n">time</span> <span class="n">hist</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">matrix_free_tv</span><span class="p">(</span><span class="n">b_</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">CPU</span> <span class="n">times</span><span class="p">:</span> <span class="n">user</span> <span class="mi">512</span> <span class="n">ms</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="mf">3.7</span> <span class="n">ms</span><span class="p">,</span> <span class="n">total</span><span class="p">:</span> <span class="mi">515</span> <span class="n">ms</span>
+<span class="n">Wall</span> <span class="n">time</span><span class="p">:</span> <span class="mi">513</span> <span class="n">ms</span>
+</code></pre></div>
+
+
+<p><img src="https://aga3.xyz/images/matrix_free_tv_denoising.png" class="center-block img-responsive"/></p>
+<p>The results are similar but not quite identical, so I'm guessing my <code>LinearOperator</code> is incorrect by a bit somewhere. However, the matrix-free version actually seems slightly better at preserving the flatness in the valleys. This version is also significantly faster with increasing input length, though it's notable the matrix implementation is faster for small inputs (runtime also changes with <span class="math">\(\lambda\)</span>). Of course neither implementation is necessarily optimized - this is more of a casual observation about my initial naïve implementations. The ADMM paper gives some additional recommendations for speeding things up when using direct (as in the first implementation above) or iterative (as with my matrix-free implementation) techniques.</p>
+<p><img src="https://aga3.xyz/images/runtime_benchmark.png" class="center-block img-responsive"/></p>
+<h2>Why TV Anyway?</h2>
+<p>Why use total variation anyway? The good thing about total variation is its ability to preserve the sharp edges in our signal. Check out what <em>quadratic</em> smoothing looks like in comparison:</p>
+<p><img src="https://aga3.xyz/images/quadratic_smoothing.png" class="center-block img-responsive"/></p>
+<p>This all comes down to the shape of the penalty function. With a quadratic penalty, small changes are tolerated while large deviations are severely penalized. With a TV (L1) penalty, deviations are all penalized proportionally to their size. Hopefully this lends some intuition to the methods.</p>
+<p><img src="https://aga3.xyz/images/penalty_functions.png" class="center-block img-responsive"/></p>
+<h2>Conclusion</h2>
+<p>So that's TV denoising implemented via ADMM. I also implemented the quadratic smoothing function with ADMM, and you can check that along with all the other code used to create this post in the <a href="https://github.com/aganders3/aganders3.github.io/blob/develop/content/notebooks/Total Variation Denoising with ADMM.ipynb">associated Jupyter Notebook</a>.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "left",
+        indent = "3cm",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+    </article>
+
+    <hr>
+
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Blog powered by <a href="http://getpelican.com">Pelican</a>,
+                which takes great advantage of <a href="http://python.org">Python</a>.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+</body>
+
+</html>
