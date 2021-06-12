@@ -1,18 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- #
-from __future__ import unicode_literals
 
-AUTHOR = u'Ashley Anderson'
-SITENAME = u':wq'
+AUTHOR = 'Ashley Anderson'
+SITENAME = ':wq'
 SITESUBTITLE = 'a catalog of stuff I happen to write down'
-SITEURL = 'https://aga3.xyz'
-
-THEME = './theme'
-THEME_STATIC_DIR = './theme/static'
-HEADER_COVER = '/images/piestewa_1024.jpg'
-
-GITHUB_URL = 'http://github.com/aganders3'
-TWITTER_URL = 'http://twitter.com/aganders3'
+SITEURL = '.'
 
 PATH = 'content'
 STATIC_PATHS = ['images', 'images/projects', 'extra/CNAME', 'notebooks']
@@ -23,19 +15,21 @@ COLOR_SCHEME_CSS = 'tomorrow_night.css' # 'monokai.css'
 PYGMENTS_RST_OPTIONS = {'linenos' : 'table'}
 DEFAULT_METADATA = {'Status' : 'draft'}
 
-USE_FOLDER_AS_CATEGORY = True
+# USE_FOLDER_AS_CATEGORY = True
 DEFAULT_DATE_FORMAT = '%A %B %d, %Y'
 
-ARTICLE_URL = '{date:%Y}/{date:%m}/{slug}.html'
-ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{slug}.html'
+# ARTICLE_URL = '{date:%Y}/{date:%m}/{slug}.html'
+# ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{slug}.html'
+ARTICLE_URL = '{date:%Y}/{date:%m}/{slug}'
+ARTICLE_SAVE_AS = '{date:%Y}/{date:%m}/{slug}/index.html'
 PAGE_URL = '{slug}/'
 PAGE_SAVE_AS = '{slug}/index.html'
 
-TIMEZONE = 'US/Central'
+TIMEZONE = 'America/New_York'
 
-DEFAULT_LANG = u'en'
+DEFAULT_LANG = 'en'
 
-PLUGIN_PATHS = ['/Users/ash/Src/Not Work/pelican-plugins']
+PLUGIN_PATHS = ['/Users/ash/src/Not Work/pelican-plugins']
 PLUGINS = ['render_math']
 
 MATH_JAX = {'align' : 'left', 'indent' : '3cm'}
@@ -48,9 +42,9 @@ AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
 # Blogroll
-# LINKS = (('Pelican', 'http://getpelican.com/'),
-#          ('Python.org', 'http://python.org/'),
-#          ('Jinja2', 'http://jinja.pocoo.org/'),
+# LINKS = (('Pelican', 'https://getpelican.com/'),
+#          ('Python.org', 'https://www.python.org/'),
+#          ('Jinja2', 'https://palletsprojects.com/p/jinja/'),
 #          ('You can modify those links in your config file', '#'),)
 
 # Social widget
@@ -61,3 +55,7 @@ DEFAULT_PAGINATION = False
 
 # Uncomment following line if you want document-relative URLs when developing
 RELATIVE_URLS = True
+
+THEME = './theme'
+THEME_STATIC_DIR = './theme/static'
+HEADER_COVER = '/images/piestewa_1024.jpg'
