@@ -13,7 +13,7 @@ rust-lang.org, by reading &lt;a href="https://doc.rust-lang.org/book/"&gt;The Ru
 Course&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Finally, I picked a couple projects:&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;I wrote a simple &lt;a href="https://github.com/aganders3/rush"&gt;&lt;code&gt;shell&lt;/code&gt;&lt;/a&gt; in the
+&lt;li&gt;I wrote a simple &lt;a href="https://github.com/aganders3/rush"&gt;shell&lt;/a&gt; in the
 spirit of an assignment I found from a &lt;a href="http://pages.cs.wisc.edu/~dusseau/Classes/CS537-F07/Projects/P1/p1.html"&gt;CS course at my alma
 mater&lt;/a&gt; &lt;/li&gt;
 &lt;li&gt;I wanted to do something more visual; I work in medical imaging and enjoyed

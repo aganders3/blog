@@ -2,13 +2,13 @@
 <html lang="en">
 
 <head>
-        <meta charset="utf-8">
+            <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <title>:wq - Archives</title>
+        <title>:wq</title>
 
         <!-- jQuery -->
         <!-- <script src="https://aga3.xyz/./theme/static/js/jquery.js"></script> -->
@@ -45,8 +45,23 @@
             <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
 
-		<meta property="og:locale" content="en">
+
+
+
+
+     <link rel="canonical" href="https://aga3.xyz/drafts/raytracing-in-rust-part-2.html" />
+
+
+			<meta property="og:locale" content="en">
 		<meta property="og:site_name" content=":wq">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://aga3.xyz/drafts/raytracing-in-rust-part-2.html">
+	<meta property="og:title" content="Raytracing in Rust Part 2">
+	<meta property="og:description" content="">
+	<meta property="og:image" content="https://aga3.xyz//images/raytracing_cover_render.png">
+	<meta property="article:published_time" content="2021-06-12 23:08:00-04:00">
 </head>
 
 <body>
@@ -79,12 +94,16 @@
     </nav>
 
     <!-- Page Header -->
-        <header class="intro-header" style="background-image: url('/images/piestewa_1024.jpg')">
+    <header class="intro-header" style="background-image: url('/images/raytracing_cover_render.png')">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
                     <div class="post-heading">
-                        <h1>Archives for :wq</h1>
+                        <h1>Raytracing in Rust Part 2</h1>
+                        <span class="meta">
+                             Saturday June 12, 2021
+                        </span>
+                        
                     </div>
                 </div>
             </div>
@@ -95,21 +114,22 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
-    <dl>
-            <dt>Friday May 28, 2021</dt>
-            <dd><a href="https://aga3.xyz/2021/05/raytracing-in-rust-part-1">Raytracing in Rust Part 1</a></dd>
-            <dt>Tuesday January 26, 2021</dt>
-            <dd><a href="https://aga3.xyz/2021/01/on-mocking">On Mocking</a></dd>
-            <dt>Friday June 07, 2019</dt>
-            <dd><a href="https://aga3.xyz/2019/06/total-variation-reconstruction">Total Variation Reconstruction</a></dd>
-            <dt>Thursday May 16, 2019</dt>
-            <dd><a href="https://aga3.xyz/2019/05/total-variation-denoising-with-admm">Total Variation Denoising with ADMM</a></dd>
-            <dt>Tuesday September 25, 2018</dt>
-            <dd><a href="https://aga3.xyz/2018/09/flask-deployment-with-fabric">Flask Deployment with Fabric</a></dd>
-            <dt>Thursday March 31, 2016</dt>
-            <dd><a href="https://aga3.xyz/2016/03/hello-world">Hello World</a></dd>
-        <hr>
-    </dl>
+    <!-- Post Content -->
+    <article>
+        <p>After <a href="https://aga3.xyz/2021/05/raytracing-in-rust-part-1">implementing a basic <code>Vec3</code>
+struct</a>, it was time to start
+creating and tracing rays.</p>
+<h2>What is ray tracing?</h2>
+<p>I've seen the term used to mean a few things, so to be specific I believe
+this implementation is eye-based path tracing. Practically speaking that means
+rays are sent from the eye (or camera), through the image plane and into the
+scene. Rays are checked for intersection with objects in the scene, and are
+either absorbed, reflected, or refracted.</p>
+<p>This requires </p>
+    </article>
+
+    <hr>
+
             </div>
         </div>
     </div>
